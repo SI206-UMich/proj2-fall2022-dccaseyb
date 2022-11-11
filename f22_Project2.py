@@ -25,17 +25,23 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 210, '1944564'),  # example
     ]
     """
-    #with open(html_file, 'r') as file:
-    soup = BeautifulSoup(html_file, 'html.parser')
-    output_list = []
-    listings = soup.find_all("div", class_ = "c1l1h97y")
-    print(listings)
-    for listing in listings:
-        meta_tag = listing.find("meta")
-        name = meta_tag.get("content")
-        name_tuple = (listings.index(listing), name)
-        output_list.append(name_tuple)
-    return output_list
+    with open(html_file, "r") as file:
+        soup = BeautifulSoup(file, 'html.parser')
+        output_list = []
+        listings = soup.find_all("div", itemprop = "itemListElement")
+        for listing in listings:
+            listing_tup = ()
+            name_tag = listing.find("div", class_ = "t1jojoys dir dir-ltr")
+            name = name_tag.contents[0]
+            span_tag = listing.find("span", class_ = "_tyxjp1")
+            cost = span_tag.contents[0].strip("$")
+            div_tag = listing.find("div", class_ = "cy5jw6o dir dir-ltr")
+            id = div_tag.get("aria-labelledby", None).split("_")[1]
+            listing_tup = (name, cost, id)
+            output_list.append(listing_tup)
+        return output_list
+
+
 
 
 def get_listing_information(listing_id):
